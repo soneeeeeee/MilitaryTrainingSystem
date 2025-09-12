@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-i18n="mainMenu">Система военной подготовки - Главное меню</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header class="header">
+        <div class="header-left">
+            <h1 data-i18n="mainMenu">Главное меню</h1>
+        </div>
+        <div class="header-right">
+            <select class="language-selector">
+                <option value="ru">Русский</option>
+                <option value="en">English</option>
+                <option value="kz">Қазақша</option>
+            </select>
+            <div class="user-info">
+                <span class="username">Иванов И.И.</span>
+                <button class="logout-btn" onclick="logout()">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M16 17v-3H9v-4h7V7l5 5-5 5M14 2a2 2 0 012 2v2h-2V4H4v16h10v-2h2v2a2 2 0 01-2 2H4a2 2 0 01-2-2V4a2 2 0 012-2h10z"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <div class="main-layout">
+        <nav class="sidebar">
+            <ul class="nav-menu">
+                <li><a href="MainMenu.html" class="nav-link active" data-i18n="mainMenu">Главное меню</a></li>
+                <li><a href="profile.html" class="nav-link" data-i18n="personalCabinet">Личный кабинет</a></li>
+                <li><a href="SessionHistory.html" class="nav-link" data-i18n="sessionHistory">История сессий</a></li>
+                <li><a href="AboutTrainer.html" class="nav-link" data-i18n="aboutTrainer">О тренажере</a></li>
+                <li><a href="documentation.html" class="nav-link" data-i18n="documentation">Документация</a></li>
+                <li><a href="instructions.html" class="nav-link" data-i18n="instructions">Инструкции</a></li>
+                <li><a href="scenarios.html" class="nav-link" data-i18n="scenarios">О сценариях</a></li>
+            </ul>
+        </nav>
+
+        <main class="content">
+            <div class="welcome-section" style="background: rgba(255, 255, 255, 0); padding: 2rem; margin-bottom: 2rem;">
+                <div style="margin-bottom: 2rem;">
+                    <h3 data-i18n="mainSections" style="color: #2c3e50; margin-bottom: 1rem; font-weight: 600; font-size: 1.25rem;">Основные разделы</h3>
+                    <div class="menu-sections" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem;">
+
+                        <div class="section-card">
+                            <div style="background: #e3f2fd; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem;">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="#4a90e2">
+                                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                                </svg>
+                            </div>
+                            <h3 data-i18n="aboutTrainer">О системе военной подготовки</h3>
+                            <p data-i18n="aboutTrainerDesc">Узнайте о системе военной подготовки: цели, возможности, принципы работы</p>
+                            <br>
+                            <button class="btn btn-primary" data-i18n="learnMore" onclick="navigateTo('AboutTrainer.html')">Узнать подробнее</button>
+                            <br>
+                        </div>
+                        
+                        <div class="section-card">
+                            <div style="background: #e8f5e8; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem;">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="#28a745">
+                                    <path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/>
+                                </svg>
+                            </div>
+                            <h3 data-i18n="scenarios">Сценарии</h3>
+                            <p data-i18n="scenariosDesc">Ознакомьтесь с тренировочными сценариями и их особенностями для эффективной военной подготовки.</p>
+                            <br>
+                            <button class="btn btn-primary" data-i18n="learnMore" onclick="navigateTo('scenarios.html')">Узнать подробнее</button>
+                            <br>
+                        </div>
+                        
+                        <div class="section-card">
+                            <div style="background: #fff3cd; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem;">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="#856404">
+                                    <path d="M16 4c0-1.11.89-2 2-2s2 .89 2 2-.89 2-2 2-2-.89-2-2zm4 18v-6h2.5l-2.54-7.63A1.5 1.5 0 0 0 18.54 8H16c-.8 0-1.54.37-2.01.99l-2.54 3.38c-.36.48-.85.63-1.37.63H8v2h2.08c1.18 0 2.3-.43 3.16-1.22L14.5 12H16v10h4z"/>
+                                </svg>
+                            </div>
+                            <h3 data-i18n="instructions">Инструкции</h3>
+                            <p data-i18n="instructionsDesc">Получите пошаговые инструкции по использованию тренажера для максимальной эффективности.</p>
+                            <br>
+                            <button class="btn btn-primary" data-i18n="learnMore" onclick="navigateTo('instructions.html')">Узнать подробнее</button>
+                            <br>
+                        </div>
+                        
+                        <div class="section-card">
+                            <div style="background: #f3e5f5; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem;">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="#7b1fa2">
+                                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                                </svg>
+                            </div>
+                            <h3 data-i18n="documentation">Документация</h3>
+                            <p data-i18n="documentationDesc">Изучите полную документацию системы, включая технические детали и руководства.</p>
+                            <br>
+                            <button class="btn btn-primary" data-i18n="learnMore" onclick="navigateTo('documentation.html')">Узнать подробнее</button>
+                            <br>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    <script>
+        function navigateTo(page) {
+            window.location.href = page;
+        }
+    </script>
+    <script type="module" src="script.js"></script>
+</body>
+</html>

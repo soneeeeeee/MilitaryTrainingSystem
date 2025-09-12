@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Система военной подготовки - Инструкции</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header class="header">
+        <div class="header-left">
+            <h1 data-i18n="instructions"></h1>
+        </div>
+        <div class="header-right">
+            <select class="language-selector">
+                <option value="ru">Русский</option>
+                <option value="en">English</option>
+                <option value="kz">Қазақша</option>
+            </select>
+            <div class="user-info">
+                <span class="username">Иванов И.И.</span>
+                <button class="logout-btn" onclick="logout()">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M16 17v-3H9v-4h7V7l5 5-5 5M14 2a2 2 0 012 2v2h-2V4H4v16h10v-2h2v2a2 2 0 01-2 2H4a2 2 0 01-2-2V4a2 2 0 012-2h10z"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <div class="main-layout">
+<nav class="sidebar">
+    <ul class="nav-menu">
+        <li><a href="MainMenu.html" class="nav-link" data-i18n="mainMenu">Главное меню</a></li>
+        <li><a href="profile.html" class="nav-link" data-i18n="personalCabinet">Личный кабинет</a></li>
+        <li><a href="SessionHistory.html" class="nav-link" data-i18n="sessionHistory">История сессий</a></li>
+        <li><a href="AboutTrainer.html" class="nav-link" data-i18n="aboutTrainer">О тренажере</a></li>
+        <li><a href="documentation.html" class="nav-link" data-i18n="documentation">Документация</a></li>
+        <li><a href="instructions.html" class="nav-link active" data-i18n="instructions">Инструкции</a></li>
+        <li><a href="scenarios.html" class="nav-link" data-i18n="scenarios">О сценариях</a></li>
+    </ul>
+</nav>
+
+        <main class="content">
+            <div class="page-template">
+                <h2 data-i18n="instructions">Инструкции</h2>
+                <div class="template-placeholder">
+                    <p>Содержимое страницы будет добавлено позже</p>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <script type="module" src="script.js"></script>
+</body>
+</html>

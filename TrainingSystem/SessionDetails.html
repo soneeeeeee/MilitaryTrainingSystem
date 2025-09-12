@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Система военной подготовки - Детали сессии</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header class="header">
+        <div class="header-left">
+            <h1>Детали сессии</h1>
+        </div>
+        <div class="header-right">
+            <select class="language-selector">
+                <option value="ru">Русский</option>
+                <option value="en">English</option>
+                <option value="kz">Қазақша</option>
+            </select>
+            <div class="user-info">
+                <span class="username">Иванов И.И.</span>
+                <button class="logout-btn" onclick="logout()">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M16 17v-3H9v-4h7V7l5 5-5 5M14 2a2 2 0 012 2v2h-2V4H4v16h10v-2h2v2a2 2 0 01-2 2H4a2 2 0 01-2-2V4a2 2 0 012-2h10z"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <div class="main-layout">
+<nav class="sidebar">
+    <ul class="nav-menu">
+        <li><a href="MainMenu.html" class="nav-link" data-i18n="mainMenu">Главное меню</a></li>
+        <li><a href="profile.html" class="nav-link" data-i18n="personalCabinet">Личный кабинет</a></li>
+        <li><a href="SessionHistory.html" class="nav-link" data-i18n="sessionHistory">История сессий</a></li>
+        <li><a href="AboutTrainer.html" class="nav-link" data-i18n="aboutTrainer">О тренажере</a></li>
+        <li><a href="documentation.html" class="nav-link" data-i18n="documentation">Документация</a></li>
+        <li><a href="instructions.html" class="nav-link" data-i18n="instructions">Инструкции</a></li>
+        <li><a href="scenarios.html" class="nav-link" data-i18n="scenarios">О сценариях</a></li>
+    </ul>
+</nav>
+
+
+        <main class="content">
+            <div class="session-details">
+                <div class="details-header">
+                    <h2>Сессия #001 - Стрельба</h2>
+                    <div class="session-meta">
+                        <span>Дата: 15.12.2024</span>
+                        <span>Время: 14:30 - 15:15</span>
+                    </div>
+                </div>
+
+                <div class="cadet-info">
+                    <h3>Информация о курсанте</h3>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <label>ФИО:</label>
+                            <span>Иван Иванович Иванов</span>
+                        </div>
+                        <div class="info-item">
+                            <label>Звание:</label>
+                            <span>Рядовой</span>
+                        </div>
+                        <div class="info-item">
+                            <label>ID:</label>
+                            <span>CAD001</span>
+                        </div>
+                        <div class="info-item">
+                            <label>Группа:</label>
+                            <span>А-1</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="results-section">
+                    <h3>Результаты нормативов</h3>
+                    <div class="results-table">
+                        <div class="table-header">
+                            <span>Норматив</span>
+                            <span>Результат</span>
+                            <span>Оценка</span>
+                            <span>Статус</span>
+                        </div>
+                        
+                        <div class="result-row">
+                            <span>Точность стрельбы</span>
+                            <span>85%</span>
+                            <span>4.5</span>
+                            <span class="status passed">Зачет</span>
+                        </div>
+                        
+                        <div class="result-row">
+                            <span>Скорость стрельбы</span>
+                            <span>12 сек</span>
+                            <span>4.2</span>
+                            <span class="status passed">Зачет</span>
+                        </div>
+                        
+                        <div class="result-row">
+                            <span>Безопасность</span>
+                            <span>100%</span>
+                            <span>5.0</span>
+                            <span class="status passed">Зачет</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="download-section">
+                    <h3>Скачать материалы</h3>
+                    <div class="download-buttons">
+                        <button class="btn btn-primary" onclick="downloadVideo()">
+                            Скачать видео сессии
+                        </button>
+                        <button class="btn btn-secondary" onclick="downloadPDF()">
+                            Результаты (PDF)
+                        </button>
+                        <button class="btn btn-secondary" onclick="downloadExcel()">
+                            Результаты (Excel)
+                        </button>
+                        <button class="btn btn-secondary" onclick="downloadWord()">
+                            Результаты (Word)
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <script type="module" src="script.js"></script>
+</body>
+</html>
