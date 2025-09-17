@@ -1,4 +1,4 @@
-// script.js (modified for other webpages; removed SessionHistory-specific code)
+// sessionHistory.js
 // Firebase imports for initializing app and Firestore operations
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js";
 import {
@@ -54,6 +54,7 @@ const translations = {
     time: "Время",
     sessionType: "Тип сессии",
     result: "Результат",
+    studentCount: "Количество учащихся",
     score: "Оценка",
     status: "Статус",
     normative: "Норматив",
@@ -87,6 +88,13 @@ const translations = {
     userId: "ID пользователя",
     averageLabel: "Средний балл:",
     resetFilter: "Сбросить фильтр",
+    scenario1: "Режим обучения - ознакомление",
+    scenario2: "Режим продвинутого обучения",
+    scenario3: "Контрольные стрельбы",
+    scenario4: "Мультипользовательский режим",
+    scenario5: "Мультипользовательский режим - оборона",
+    scenario6: "Режим обучения - гранатомет",
+    scenario7: "Режим оператора дрона",
     AdminManagement: "Управление пользователями",
     addNewUser: "Добавить нового пользователя",
     userRole: "Роль",
@@ -111,7 +119,8 @@ const translations = {
     errorUpdatingUser: "Ошибка при обновлении пользователя",
     errorDeletingUser: "Ошибка при удалении пользователя",
     errorLoadingUsers: "Ошибка при загрузке пользователей",
-    userIdExists: "Пользователь с таким ID уже существует"},
+    userIdExists: "Пользователь с таким ID уже существует"
+  },
   kz: {
     personalCabinet: "Жеке кабинет",
     mainMenu: "Негізгі мәзір",
@@ -136,6 +145,7 @@ const translations = {
     time: "Уақыт",
     sessionType: "Сессия түрі",
     result: "Нәтиже",
+    studentCount: "Оқушылар саны",
     score: "Баға",
     status: "Күй",
     normative: "Норматив",
@@ -169,6 +179,13 @@ const translations = {
     userId: "Пайдаланушы ID",
     averageLabel: "Орташа балл:",
     resetFilter: "Сүзгіні қалпына келтіру",
+    scenario1: "Оқу режимі - танысу",
+    scenario2: "Жетілдірілген оқу режимі",
+    scenario3: "Бақылау атуы",
+    scenario4: "Көп ойыншы режимі",
+    scenario5: "Көп ойыншы режимі - қорғаныс",
+    scenario6: "Оқу режимі - гранатомет",
+    scenario7: "Дрон операторының режимі",
     AdminManagement: "Пайдаланушыларды басқару",
     addNewUser: "Жаңа пайдаланушы қосу",
     userRole: "Рөл",
@@ -194,13 +211,13 @@ const translations = {
     errorDeletingUser: "Пайдаланушыны жою кезінде қате",
     errorLoadingUsers: "Пайдаланушыларды жүктеу кезінде қате",
     userIdExists: "Мұндай ID-мен пайдаланушы бұрыннан бар",
-}
+  }
 };
 
 // Constants for Firestore collection names
 const SESSION_COLLECTION = "session";
 const USER_COLLECTION = "users";
-const validLanguages = ["en", "ru", "kz"];
+const validLanguages = ["ru", "kz"];
 
 // Converts a value to a Date object, handling various input formats
 function toDate(value) {
@@ -236,7 +253,7 @@ function formatTimeField(value, lang) {
 
 // Returns the locale string for a given language code
 function getLocale(lang) {
-  return lang === "en" ? "en-US" : lang === "ru" ? "ru-RU" : "kk-KZ";
+  return lang === "ru" ? "ru-RU" : "kk-KZ";
 }
 
 // Sets the interface language and updates translated elements
@@ -255,22 +272,15 @@ function setLanguage(lang) {
 
   const user = JSON.parse(localStorage.getItem("loggedInUser") || "{}");
   const pathname = window.location.pathname;
-  if (pathname.includes("SessionDetails.html")) {
-    loadSessionDetails(user, lang);
-  } else if (pathname.includes("profile.html") || pathname.includes("SessionHistory.html")) {
-    let containerId = pathname.includes("profile.html")
-      ? user.role === "student" ? "sessionsListCadet" : "sessionsListInstructor"
-      : "sessionsList";
+  if (pathname.includes("SessionHistory.html")) {
+    const filterTypeEl = document.getElementById("filterType");
+    const filterDateEl = document.getElementById("filterDate");
     let filters = {};
-    if (pathname.includes("SessionHistory.html")) {
-      const filterTypeEl = document.getElementById("filterType");
-      const filterDateEl = document.getElementById("filterDate");
-      if (filterTypeEl && filterDateEl) {
-        filters.type = filterTypeEl.value || "all";
-        filters.date = filterDateEl.value || "";
-      }
+    if (filterTypeEl && filterDateEl) {
+      filters.type = filterTypeEl.value || "all";
+      filters.date = filterDateEl.value || "";
     }
-    loadSessions(user, lang, containerId, filters);
+    loadSessions(user, lang, "sessionsList", filters);
   }
 }
 
@@ -279,12 +289,6 @@ function logout() {
   localStorage.removeItem("loggedInUser");
   window.location.href = "index.html";
 }
-
-// Placeholder functions for download features (not implemented)
-window.downloadVideo = () => alert(translations[localStorage.getItem("lang") || "ru"].downloadVideo);
-window.downloadPDF = () => alert(translations[localStorage.getItem("lang") || "ru"].downloadPDF);
-window.downloadExcel = () => alert(translations[localStorage.getItem("lang") || "ru"].downloadExcel);
-window.downloadWord = () => alert(translations[localStorage.getItem("lang") || "ru"].downloadWord);
 
 // Creates a DOM element for a session with clickable navigation
 function buildSessionElement(docId, data, userRole, lang, isHistoryPage) {
@@ -296,16 +300,30 @@ function buildSessionElement(docId, data, userRole, lang, isHistoryPage) {
 
   const wrapper = document.createElement("div");
   wrapper.className = isHistoryPage ? "session-row" : "session-item";
+  if (userRole === "teacher" && isHistoryPage) {
+    wrapper.classList.add("teacher-view");
+  }
   wrapper.dataset.sessionId = docId;
 
   if (isHistoryPage) {
-    wrapper.innerHTML = `
-      <span>${dateStr}</span>
-      <span>${timeStr}</span>
-      <span>${scenarioType}</span>
-      <span>${userRole === "teacher" ? (Array.isArray(data.user_ids) ? data.user_ids.length : (data.participants || 0)) : result}</span>
-      <span class="status ${status.toLowerCase() === translations[lang].passed.toLowerCase() ? 'passed' : 'failed'}">${status}</span>
-    `;
+    if (userRole === "teacher") {
+      // For teachers: show student count instead of result, hide status
+      wrapper.innerHTML = `
+        <span>${dateStr}</span>
+        <span>${timeStr}</span>
+        <span>${scenarioType}</span>
+        <span>${Array.isArray(data.user_ids) ? data.user_ids.length : (data.participants || 0)}</span>
+      `;
+    } else {
+      // For students: show result and status
+      wrapper.innerHTML = `
+        <span>${dateStr}</span>
+        <span>${timeStr}</span>
+        <span>${scenarioType}</span>
+        <span>${result}</span>
+        <span class="status ${status.toLowerCase() === translations[lang].passed.toLowerCase() ? 'passed' : 'failed'}">${status}</span>
+      `;
+    }
   } else {
     wrapper.innerHTML = `
       <span class="session-date">${dateStr}</span>
@@ -356,14 +374,30 @@ async function loadSessions(user, lang, containerId, filters = {}) {
     container.innerHTML = "";
 
     if (isHistoryPage) {
-      container.innerHTML = `
-        <div class="table-header">
+      // Update table header based on user role
+      const tableHeader = document.createElement("div");
+      tableHeader.id = "tableHeader";
+      
+      if (user.role === "teacher") {
+        tableHeader.className = "table-header teacher-view";
+        tableHeader.innerHTML = `
+          <span data-i18n="date">${translations[lang].date}</span>
+          <span data-i18n="time">${translations[lang].time}</span>
+          <span data-i18n="sessionType">${translations[lang].sessionType}</span>
+          <span data-i18n="studentCount">${translations[lang].studentCount}</span>
+        `;
+      } else {
+        tableHeader.className = "table-header";
+        tableHeader.innerHTML = `
           <span data-i18n="date">${translations[lang].date}</span>
           <span data-i18n="time">${translations[lang].time}</span>
           <span data-i18n="sessionType">${translations[lang].sessionType}</span>
           <span data-i18n="result">${translations[lang].result}</span>
           <span data-i18n="status">${translations[lang].status}</span>
-        </div>`;
+        `;
+      }
+      
+      container.appendChild(tableHeader);
     }
 
     if (snap.empty) {
@@ -393,180 +427,6 @@ async function loadSessions(user, lang, containerId, filters = {}) {
   }
 }
 
-// Computes the average score for a user's sessions
-async function computeAverageScore(user, lang) {
-  try {
-    const q = query(
-      collection(db, SESSION_COLLECTION),
-      where("user_ids", "array-contains", user.user_id),
-      orderBy("time", "desc")
-    );
-    const snap = await getDocs(q);
-    let total = 0, count = 0;
-    snap.forEach(doc => {
-      const val = doc.data()?.result;
-      if (Number.isFinite(val)) {
-        total += val;
-        count++;
-      }
-    });
-    return count > 0 ? (total / count).toFixed(1) : translations[lang].noSessions;
-  } catch (err) {
-    console.warn("Failed to compute average:", err.message);
-    return translations[lang].noSessions;
-  }
-}
-
-// Handles user login by validating credentials against Firestore
-async function handleLogin(userId, password, lang) {
-  if (!userId || !password) {
-    alert(translations[lang].loginError);
-    return false;
-  }
-  try {
-    const q = query(
-      collection(db, USER_COLLECTION),
-      where("user_id", "==", userId),
-      where("password", "==", password)
-    );
-    const snap = await getDocs(q);
-    if (snap.empty) {
-      alert(translations[lang].loginError);
-      return false;
-    }
-    const userData = snap.docs[0].data();
-    const user = {
-      user_id: userData.user_id,
-      role: userData.role || "student",
-      name: userData.name || "",
-      rank: userData.rank || "",
-      group: userData.group || ""
-    };
-    localStorage.setItem("loggedInUser", JSON.stringify(user));
-    
-    // Redirect based on user role
-    if (user.role === "admin") {
-      window.location.href = "administrator.html";
-    } else {
-      window.location.href = "MainMenu.html";
-    }
-    
-    return true;
-  } catch (err) {
-    console.error("Login error:", err.message);
-    alert(translations[lang].errorLoading);
-    return false;
-  }
-}
-
-// Loads and displays detailed session information
-async function loadSessionDetails(user, lang) {
-  const urlParams = new URLSearchParams(window.location.search);
-  const sessionId = urlParams.get("id");
-  if (!sessionId) {
-    document.querySelector(".session-details").innerHTML = `<p>${translations[lang].errorLoading}</p>`;
-    return;
-  }
-
-  try {
-    const docRef = doc(db, SESSION_COLLECTION, sessionId);
-    const docSnap = await getDoc(docRef);
-    if (!docSnap.exists()) {
-      document.querySelector(".session-details").innerHTML = `<p>${translations[lang].noSessions}</p>`;
-      return;
-    }
-
-    const data = docSnap.data();
-    const dateStr = formatDateField(data.time, lang);
-    const timeStr = formatTimeField(data.time, lang);
-    const scenarioType = data.scenarioType || data.type || data.scenario || "—";
-
-    const sessionHeader = document.querySelector(".details-header h2");
-    if (sessionHeader) {
-      sessionHeader.textContent = `${translations[lang].sessionDetails} #${sessionId} - ${scenarioType}`;
-    }
-
-    const sessionMeta = document.querySelector(".session-meta");
-    if (sessionMeta) {
-      sessionMeta.innerHTML = `
-        <span data-i18n="date">${translations[lang].date}: ${dateStr}</span>
-        <span data-i18n="time">${translations[lang].time}: ${timeStr}</span>
-      `;
-    }
-
-    const cadetInfo = document.querySelector(".cadet-info");
-    if (cadetInfo) {
-      const infoGrid = cadetInfo.querySelector(".info-grid");
-      infoGrid.innerHTML = `
-        <div class="info-item">
-          <label data-i18n="nameLabel">${translations[lang].nameLabel}</label>
-          <span>${user.name || "—"}</span>
-        </div>
-        <div class="info-item">
-          <label data-i18n="rankLabel">${translations[lang].rankLabel}</label>
-          <span>${user.rank || "—"}</span>
-        </div>
-        <div class="info-item">
-          <label data-i18n="idLabel">${translations[lang].idLabel}</label>
-          <span>${user.user_id || "—"}</span>
-        </div>
-        <div class="info-item">
-          <label data-i18n="groupLabel">${translations[lang].groupLabel}</label>
-          <span>${user.group || "—"}</span>
-        </div>
-      `;
-    }
-
-    const resultsTable = document.querySelector(".results-table");
-    if (resultsTable) {
-      resultsTable.innerHTML = `
-        <div class="table-header">
-          <span data-i18n="normative">${translations[lang].normative}</span>
-          <span data-i18n="result">${translations[lang].result}</span>
-          <span data-i18n="score">${translations[lang].score}</span>
-          <span data-i18n="status">${translations[lang].status}</span>
-        </div>
-        <div class="result-row">
-          <span data-i18n="accuracy">${translations[lang].accuracy}</span>
-          <span>${data.accuracy ? `${data.accuracy}%` : "—"}</span>
-          <span>${data.accuracyScore ? data.accuracyScore.toFixed(1) : "—"}</span>
-          <span class="status ${data.accuracyStatus?.toLowerCase() === translations[lang].passed.toLowerCase() ? 'passed' : 'failed'}" data-i18n="${data.accuracyStatus?.toLowerCase() || 'passed'}">${data.accuracyStatus || translations[lang].passed}</span>
-        </div>
-        <div class="result-row">
-          <span data-i18n="speed">${translations[lang].speed}</span>
-          <span>${data.speed ? `${data.speed} sec` : "—"}</span>
-          <span>${data.speedScore ? data.speedScore.toFixed(1) : "—"}</span>
-          <span class="status ${data.speedStatus?.toLowerCase() === translations[lang].passed.toLowerCase() ? 'passed' : 'failed'}" data-i18n="${data.speedStatus?.toLowerCase() || 'passed'}">${data.speedStatus || translations[lang].passed}</span>
-        </div>
-        <div class="result-row">
-          <span data-i18n="safety">${translations[lang].safety}</span>
-          <span>${data.safety ? `${data.safety}%` : "—"}</span>
-          <span>${data.safetyScore ? data.safetyScore.toFixed(1) : "—"}</span>
-          <span class="status ${data.safetyStatus?.toLowerCase() === translations[lang].passed.toLowerCase() ? 'passed' : 'failed'}" data-i18n="${data.safetyStatus?.toLowerCase() || 'passed'}">${data.safetyStatus || translations[lang].passed}</span>
-        </div>
-      `;
-    }
-
-    const downloadSection = document.querySelector(".download-section h3");
-    if (downloadSection) {
-      downloadSection.setAttribute("data-i18n", "downloadMaterials");
-      downloadSection.textContent = translations[lang].downloadMaterials;
-    }
-
-    const downloadButtons = document.querySelectorAll(".download-buttons button");
-    downloadButtons.forEach(btn => {
-      const text = btn.getAttribute("onclick").includes("downloadVideo") ? translations[lang].downloadVideo :
-                   btn.getAttribute("onclick").includes("downloadPDF") ? translations[lang].downloadPDF :
-                   btn.getAttribute("onclick").includes("downloadExcel") ? translations[lang].downloadExcel :
-                   translations[lang].downloadWord;
-      btn.textContent = text;
-    });
-  } catch (err) {
-    console.error("Session details load error:", err.message);
-    document.querySelector(".session-details").innerHTML = `<p>${translations[lang].errorLoading}</p>`;
-  }
-}
-
 // Initializes the page, sets up event listeners, and loads user-specific content
 document.addEventListener("DOMContentLoaded", async () => {
   const lang = validLanguages.includes(localStorage.getItem("lang")) ? localStorage.getItem("lang") : "ru";
@@ -578,28 +438,9 @@ document.addEventListener("DOMContentLoaded", async () => {
     langSelect.addEventListener("change", (e) => setLanguage(e.target.value));
   }
 
-  const isLoginPage = window.location.pathname.includes("index.html") || window.location.pathname === "/";
-  const isProfilePage = window.location.pathname.includes("profile.html");
-  const isSessionDetailsPage = window.location.pathname.includes("SessionDetails.html");
-
-  if (!isLoginPage) {
-    const logoutBtn = document.querySelector(".logout-btn");
-    if (logoutBtn) {
-      logoutBtn.addEventListener("click", logout);
-    }
-  }
-
-  if (isLoginPage) {
-    const loginForm = document.getElementById("loginForm");
-    if (loginForm) {
-      loginForm.addEventListener("submit", async (e) => {
-        e.preventDefault();
-        const userId = document.getElementById("userId")?.value?.trim();
-        const password = document.getElementById("password")?.value?.trim();
-        await handleLogin(userId, password, lang);
-      });
-    }
-    return;
+  const logoutBtn = document.querySelector(".logout-btn");
+  if (logoutBtn) {
+    logoutBtn.addEventListener("click", logout);
   }
 
   const storedUserRaw = localStorage.getItem("loggedInUser");
@@ -628,47 +469,30 @@ document.addEventListener("DOMContentLoaded", async () => {
       : user.name;
   }
 
-  if (isProfilePage) {
-    const cadetProfile = document.getElementById("cadetProfile");
-    const instructorProfile = document.getElementById("instructorProfile");
+  await loadSessions(user, lang, "sessionsList");
 
-    if (user.role === "student") {
-      if (cadetProfile) cadetProfile.style.display = "block";
-      if (instructorProfile) instructorProfile.style.display = "none";
+  window.isFilterApplied = false;
+  const filterBtn = document.getElementById("filterBtn");
+  if (filterBtn) {
+    filterBtn.textContent = translations[lang].filter;
+    filterBtn.addEventListener("click", async () => {
+      const currentLang = localStorage.getItem("lang") || "ru";
+      const type = document.getElementById("filterType")?.value || "all";
+      const date = document.getElementById("filterDate")?.value || "";
 
-      const nameEl = document.getElementById("cadetName");
-      const rankEl = document.getElementById("cadetRank");
-      const ratingEl = document.getElementById("cadetRating");
-
-      if (nameEl) nameEl.textContent = user.name || "—";
-      if (rankEl) rankEl.textContent = user.rank || "—";
-      if (ratingEl) {
-        const avg = await computeAverageScore(user, lang);
-        ratingEl.textContent = avg;
+      if (window.isFilterApplied) {
+        document.getElementById("filterType").value = "all";
+        document.getElementById("filterDate").value = "";
+        filterBtn.textContent = translations[currentLang].filter;
+        window.isFilterApplied = false;
+        await loadSessions(user, currentLang, "sessionsList");
+      } else if (type !== "all" || date) {
+        filterBtn.textContent = translations[currentLang].resetFilter;
+        window.isFilterApplied = true;
+        await loadSessions(user, currentLang, "sessionsList", { type, date });
       }
-    } else {
-      if (cadetProfile) cadetProfile.style.display = "none";
-      if (instructorProfile) instructorProfile.style.display = "block";
-
-      const nameEl = document.getElementById("instrName");
-      const rankEl = document.getElementById("instrRank");
-      const groupEl = document.getElementById("instrGroup");
-
-      if (nameEl) nameEl.textContent = user.name || "—";
-      if (rankEl) rankEl.textContent = user.rank || "—";
-      if (groupEl) groupEl.textContent = user.group || "—";
-    }
+    });
   }
-
-  if (isSessionDetailsPage) {
-    await loadSessionDetails(user, lang);
-  } else {
-    const containerId = isProfilePage
-      ? (user.role === "student" ? "sessionsListCadet" : "sessionsListInstructor")
-      : "sessionsList";
-    await loadSessions(user, lang, containerId);
-  }
-
 });
 
 export { translations };

@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-i18n="AdminManagement"></title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header class="header">
+        <div class="header-left">
+            <h1 data-i18n="AdminManagement">Управление пользователями</h1>
+        </div>
+        <div class="header-right">
+            <select class="language-selector">
+                <option value="ru">Русский</option>
+                <option value="kz">Қазақша</option>
+            </select>
+            <div class="user-info">
+                <span class="username">-</span>
+                <button class="logout-btn" onclick="logout()">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M16 17v-3H9v-4h7V7l5 5-5 5M14 2a2 2 0 012 2v2h-2V4H4v16h10v-2h2v2a2 2 0 01-2 2H4a2 2 0 01-2-2V4a2 2 0 012-2h10z"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <div class="main-layout">
+        <nav class="sidebar">
+            <ul class="nav-menu">
+                <li><a href="MainMenu.html" class="nav-link" data-i18n="mainMenu">Главное меню</a></li>
+                <li><a href="profile.html" class="nav-link" data-i18n="personalCabinet">Личный кабинет</a></li>
+                <li><a href="SessionHistory.html" class="nav-link" data-i18n="sessionHistory">История сессий</a></li>
+                <li><a href="administrator.html" class="nav-link active" data-i18n="AdminManagement">Управление пользователями</a></li>
+                <li><a href="AboutTrainer.html" class="nav-link" data-i18n="aboutTrainer">О тренажере</a></li>
+                <li><a href="documentation.html" class="nav-link" data-i18n="documentation">Документация</a></li>
+                <li><a href="instructions.html" class="nav-link" data-i18n="instructions">Инструкции</a></li>
+                <li><a href="scenarios.html" class="nav-link" data-i18n="scenarios">О сценариях</a></li>
+            </ul>
+        </nav>
+
+        <main class="content">
+            <div id="accessDenied" style="display: none; text-align: center; color: red;">
+                <h2 data-i18n="accessDenied">Доступ запрещен. Только для администраторов.</h2>
+                <a href="login.html" data-i18n="backToLogin">Вернуться на страницу входа</a>
+            </div>
+            <div id="adminContent">
+                <!-- Add New User Section -->
+                <div class="profile-section" style="margin-bottom: 2rem;">
+                    <h2 data-i18n="addNewUser">Добавить нового пользователя</h2>
+                    <form id="addUserForm" class="user-form">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label data-i18n="nameLabel">ФИО:</label>
+                                <input type="text" id="userName" required placeholder="Иванов Иван Иванович">
+                            </div>
+                            <div class="form-group">
+                                <label data-i18n="userRole">-</label>
+                                <select id="userRole" required>
+                                    <option value="">Выберите роль</option>
+                                    <option value="student" data-i18n="student">Курсант</option>
+                                    <option value="teacher" data-i18n="instructor">Инструктор</option>
+                                    <option value="admin" data-i18n="administrator">Администратор</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label data-i18n="rankLabel">Звание:</label>
+                                <input type="text" id="userRank" placeholder="Рядовой">
+                            </div>
+                            <div class="form-group">
+                                <label data-i18n="groupLabel">Группа:</label>
+                                <select id="userGroup" required>
+                                    <option value="">Выберите группу</option>
+                                    <option value="А-1">Группа А-1</option>
+                                    <option value="А-2">Группа А-2</option>
+                                    <option value="Б-1">Группа Б-1</option>
+                                    <option value="Б-2">Группа Б-2</option>
+                                    <option value="В-1">Группа В-1</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label data-i18n="userId">ID пользователя:</label>
+                                <input type="text" id="newUserId" required placeholder="user001">
+                            </div>
+                            <div class="form-group">
+                                <label data-i18n="password">Пароль:</label>
+                                <input type="password" id="newUserPassword" required placeholder="Введите пароль">
+                            </div>
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary" data-i18n="addUser">Добавить пользователя</button>
+                            <button type="button" class="btn btn-secondary" onclick="generateCredentials()" data-i18n="generateCredentials">Сгенерировать данные</button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Users List Section -->
+                <div class="profile-section">
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem;">
+                        <h2 data-i18n="usersList">Список пользователей</h2>
+                        <div class="filters">
+                            <select id="roleFilter" class="filter-select">
+                                <option value="all" data-i18n="allRoles">Все роли</option>
+                                <option value="student" data-i18n="student">Курсанты</option>
+                                <option value="teacher" data-i18n="instructor">Инструкторы</option>
+                                <option value="admin" data-i18n="administrator">Администраторы</option>
+                            </select>
+                            <select id="groupFilter" class="filter-select">
+                                <option value="all" data-i18n="allGroups">Все группы</option>
+                                <option value="А-1">Группа А-1</option>
+                                <option value="А-2">Группа А-2</option>
+                                <option value="Б-1">Группа Б-1</option>
+                                <option value="Б-2">Группа Б-2</option>
+                                <option value="В-1">Группа В-1</option>
+                            </select>
+                            <button id="filterUsersBtn" class="btn btn-secondary" data-i18n="filter">Фильтр</button>
+                        </div>
+                    </div>
+
+                    <div class="users-table" id="usersTable">
+                        <div class="table-header">
+                            <span data-i18n="nameLabel">ФИО</span>
+                            <span data-i18n="userRole">Роль</span>
+                            <span data-i18n="rankLabel">Звание</span>
+                            <span data-i18n="groupLabel">Группа</span>
+                            <span data-i18n="userId">ID</span>
+                        </div>
+                        <div id="usersListContainer">
+                            <!-- Users will be loaded here -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Edit User Modal -->
+                <div id="editUserModal" class="modal" style="display: none;">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3 data-i18n="editUser">Редактировать пользователя</h3>
+                            <button class="modal-close" onclick="closeEditModal()">&times;</button>
+                        </div>
+                        <form id="editUserForm">
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label data-i18n="nameLabel">ФИО:</label>
+                                    <input type="text" id="editUserName" required>
+                                </div>
+                                <div class="form-group">
+                                    <label data-i18n="userRole">Роль:</label>
+                                    <select id="editUserRole" required>
+                                        <option value="student" data-i18n="student">Курсант</option>
+                                        <option value="teacher" data-i18n="instructor">Инструктор</option>
+                                        <option value="admin" data-i18n="administrator">Администратор</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label data-i18n="rankLabel">Звание:</label>
+                                    <input type="text" id="editUserRank">
+                                </div>
+                                <div class="form-group">
+                                    <label data-i18n="groupLabel">Группа:</label>
+                                    <select id="editUserGroup" required>
+                                        <option value="А-1">Группа А-1</option>
+                                        <option value="А-2">Группа А-2</option>
+                                        <option value="Б-1">Группа Б-1</option>
+                                        <option value="Б-2">Группа Б-2</option>
+                                        <option value="В-1">Группа В-1</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label data-i18n="password">Новый пароль (оставьте пустым, чтобы не менять):</label>
+                                    <input type="password" id="editUserPassword" placeholder="Новый пароль">
+                                </div>
+                            </div>
+                            <div class="form-actions">
+                                <button type="submit" class="btn btn-primary" data-i18n="saveChanges">Сохранить изменения</button>
+                                <button type="button" class="btn btn-secondary" onclick="closeEditModal()" data-i18n="cancel">Отмена</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script type="module" src="script.js"></script>
+    <script type="module" src="AdminManagement.js"></script>
+</body>
+</html>

@@ -14,7 +14,6 @@
         <div class="header-right">
             <select id="language" class="language-selector">
                 <option value="ru">Русский</option>
-                <option value="en">English</option>
                 <option value="kz">Қазақша</option>
             </select>
             <div class="user-info">
@@ -34,7 +33,7 @@
                 <li><a href="MainMenu.html" class="nav-link" data-i18n="mainMenu">Главное меню</a></li>
                 <li><a href="profile.html" class="nav-link" data-i18n="personalCabinet">Личный кабинет</a></li>
                 <li><a href="SessionHistory.html" class="nav-link active" data-i18n="sessionHistory">История сессий</a></li>
-                <li><a href="AboutTrainer.html" class="nav-link" data-i18n="aboutTrainer">О тренажере</a></li>
+                <li><a href="AboutTrainer.html" class="nav-link" data-i18n="aboutTrainer">О тренировочном центре</a></li>
                 <li><a href="documentation.html" class="nav-link" data-i18n="documentation">Документация</a></li>
                 <li><a href="instructions.html" class="nav-link" data-i18n="instructions">Инструкции</a></li>
                 <li><a href="scenarios.html" class="nav-link" data-i18n="scenarios">О сценариях</a></li>
@@ -45,32 +44,30 @@
                 <div class="filters">
                     <select id="filterType" class="filter-select">
                         <option value="all" data-i18n="all">Все типы</option>
-                        <option value="Scenario 1" data-i18n="scenario1">Scenario 1</option>
-                        <option value="Scenario 2" data-i18n="scenario2">Scenario 2</option>
-                        <option value="Scenario 3" data-i18n="scenario3">Scenario 3</option>
-                        <option value="Scenario 4" data-i18n="scenario4">Scenario 4</option>
-                        <option value="Scenario 5" data-i18n="scenario5">Scenario 5</option>
-                        <option value="Scenario 6" data-i18n="scenario6">Scenario 6</option>
-                        <option value="Scenario 7" data-i18n="scenario7">Scenario 7</option>
+                        <option value="Сценарий 1" data-i18n="scenario1">Сценарий 1</option>
+                        <option value="Сценарий 2" data-i18n="scenario2">Сценарий 2</option>
+                        <option value="Сценарий 3" data-i18n="scenario3">Сценарий 3</option>
+                        <option value="Сценарий 4" data-i18n="scenario4">Сценарий 4</option>
+                        <option value="Сценарий 5" data-i18n="scenario5">Сценарий 5</option>
+                        <option value="Сценарий 6" data-i18n="scenario6">Сценарий 6</option>
+                        <option value="Сценарий 7" data-i18n="scenario7">Сценарий 7</option>
                     </select>
                     <input id="filterDate" type="date" class="filter-date">
                     <button id="filterBtn" class="btn btn-secondary" data-i18n="filter">Фильтр</button>
                 </div>
 
                 <div id="sessionsList" class="sessions-table">
-                    <div class="table-header">
-                        <span data-i18n="date">Датаrr</span>
+                    <div class="table-header" id="tableHeader">
+                        <span data-i18n="date">Дата</span>
                         <span data-i18n="time">Время</span>
                         <span data-i18n="sessionType">Тип сессии</span>
                         <span data-i18n="result">Результат</span>
                         <span data-i18n="status">Статус</span>
                     </div>
-                    <!-- Sessions will be dynamically inserted here -->
                 </div>
             </div>
         </main>
     </div>
-    
-    <script type="module" src="script.js"></script>
+    <script type="module" src="sessionHistory.js"></script>
 </body>
 </html>
