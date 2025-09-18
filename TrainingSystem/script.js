@@ -418,6 +418,7 @@ async function computeAverageScore(user, lang) {
 }
 
 // Handles user login by validating credentials against Firestore
+// Handles user login by validating credentials against Firestore
 async function handleLogin(userId, password, lang) {
   if (!userId || !password) {
     alert(translations[lang].loginError);
@@ -444,7 +445,6 @@ async function handleLogin(userId, password, lang) {
     };
     localStorage.setItem("loggedInUser", JSON.stringify(user));
     
-    // Redirect based on user role
     if (user.role === "admin") {
       window.location.href = "administrator.html";
     } else {
@@ -611,7 +611,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   let user;
   try {
     user = JSON.parse(storedUserRaw);
-    if (!user.user_id || !["teacher", "student"].includes(user.role)) {
+    if (!user.user_id || !["teacher", "student","admin"].includes(user.role)) {
       throw new Error("Invalid user data");
     }
   } catch (err) {
